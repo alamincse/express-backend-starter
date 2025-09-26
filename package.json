@@ -1,0 +1,33 @@
+{
+  "name": "myapp(expressjs)",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Al-Amin Sarker <cseal.amin.09@gmail.com>",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "module-alias": "^2.2.3",
+    "mongoose": "^8.18.2"
+  },
+  "_moduleAliases": {
+    "@app": "app",
+    "@controllers": "app/controllers",
+    "@controllers_web": "app/controllers/web",
+    "@controllers_api": "app/controllers/api",
+    "@middleware": "app/middleware",
+    "@models": "app/models",
+    "@providers": "app/providers",
+    "@config": "config",
+    "@database": "database",
+    "@public": "public",
+    "@routes": "routes",
+    "@views": "views"
+  }
+}
