@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const env = require('@config/env');
 
 class Database {
 	constructor() {
-		this.uri = 'mongodb://127.0.0.1/crud';
+		this.uri = env.db ?? 'mongodb://127.0.0.1/crud';
 	}
 
 	async connect() {
