@@ -12,6 +12,7 @@
 require('module-alias/register'); // load module alias register(first)
 const express = require('express');
 const Route  = require('@app/providers/RouteServiceProvider');
+require('dotenv').config();
 require('@config/db');
 
 class AppServer {
@@ -58,7 +59,7 @@ class AppServer {
 	createServer() {
 		try {
 			this.app.listen(this.port, () => {
-				console.log(`Server is running at http://${this.host}:${this.port}`);
+				console.log(`Server is running at ${this.host}:${this.port}`);
 			});
 		} catch(error) {
 			console.error('Caught exception: ', error.stack ?? error.message);
@@ -70,6 +71,6 @@ class AppServer {
  * Bootstrap and start the server
  * Loads environment config, global helpers and bootstrap.
  */
-const server = new AppServer(3000, '127.0.0.1');
+const server = new AppServer(process.env.APP_STAGING_ENV_PORT, process.env.APP_URL);
 
 server.createServer();
