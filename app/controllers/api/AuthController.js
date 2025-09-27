@@ -53,11 +53,11 @@ class AuthController {
 		    	id: user._id, 
 		    	name: user.name,
 		    	email: user.email,
-		    	expiresIn: process.env.JWT_EXPIRES_IN ?? 3600,
+		    	expiresIn: 3600, // 1h for cookie 
 		    };
 
 		    const expiresIn = { 
-		    	expiresIn: process.env.JWT_EXPIRES_IN ?? 3600 
+		    	expiresIn: process.env.JWT_EXPIRES_IN // for jwt token
 		    }
 
 		    // JWT generate
