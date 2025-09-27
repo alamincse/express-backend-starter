@@ -14,6 +14,10 @@ class User {
 	    return this.model.findById(id);
 	}
 
+	async findOne(filter) {
+  		return this.model.findOne(filter);
+  	}
+
 	async create(data) {
 	    const user = new this.model(data);
 
