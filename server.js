@@ -13,6 +13,7 @@
 require('module-alias/register'); // load module alias register(first)
 const express = require('express');
 const env = require('@config/env');
+const cookieParser = require('cookie-parser');
 const expressLayouts = require('express-ejs-layouts');
 const RenderService = require('@app/services/RenderService');
 const LoggerService = require('@app/services/LoggerService');
@@ -61,6 +62,8 @@ class AppServer {
 
 	    // use express view engine layout
 	    this.app.use(expressLayouts);
+
+	    this.app.use(cookieParser());
   	}
 
 	/**
