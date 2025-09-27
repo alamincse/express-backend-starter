@@ -32,7 +32,14 @@ class UserController {
         const errors = validationResult(req);
 
         if (! errors.isEmpty()) {
-          return res.status(400).json({ errors: errors.array() });
+          const errorObject = {};
+
+          errors.array().forEach(err => {
+            errorObject[err.path] = err.msg; 
+          });
+
+          return res.status(400).json({ errors: errorObject });
+          // return res.status(400).json({ errors: errors.array() });
         }
 
     		const { name, email, password, status } = req.body;
