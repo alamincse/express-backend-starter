@@ -6,12 +6,12 @@ class UserController {
 	async store(req, res) {
     	try {
         await body('name')
-                .notEmpty().withMessage('Name is required')
+                .notEmpty().withMessage('Name is required').bail()
                 .isLength({ min: 2 }).withMessage('Name must be at least 2 characters')
                 .run(req);
 
         await body('email')
-                .notEmpty().withMessage('Email is required')
+                .notEmpty().withMessage('Email is required').bail()
                 .isEmail().withMessage('Invalid email')
                 .custom(async (value) => {
                   const user = await User.findOne({ email: value });
@@ -20,7 +20,7 @@ class UserController {
                 .run(req);
 
         await body('password')
-                .notEmpty().withMessage('Password is required')
+                .notEmpty().withMessage('Password is required').bail()
                 .isLength({ min: 3 }).withMessage('Password must be at least 3 characters')
                 .run(req);
 
