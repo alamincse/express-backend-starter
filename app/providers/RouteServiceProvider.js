@@ -8,6 +8,7 @@
 const express = require('express');
 const webRoutes = require('@routes/web');
 const apiRoutes = require('@routes/api');
+const rateLimit = require('express-rate-limit');
 
 class RouteServiceProvider {
 	/**
@@ -35,6 +36,23 @@ class RouteServiceProvider {
     }
 
     /**
+     * Rate limiter configuration only for API routes
+     */
+    apiRateLimiter() {
+        return rateLimit({
+            windowMs: 1 * 60 * 1000, // 1 minute
+            max: 60, // limit each IP to 60 requests per windowMs
+            standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
+            legacyHeaders: false, // Disable `X-RateLimit-*` headers
+            message: {
+                errors: {
+                    message: 'Too many attempts, please try again later.',
+                },
+            },
+        });
+    }
+
+    /**
      * Registers Web routes with the application.
      * - Routes are mounted at the '/' prefix.
      *
@@ -55,7 +73,7 @@ class RouteServiceProvider {
     mapApiRoutes() {
     	const router = this.isEmptyRoutes(apiRoutes);
 
-        this.app.use('/api', router);
+        this.app.use('/api', this.apiRateLimiter(), router);
     }
 
     /**
