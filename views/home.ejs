@@ -50,17 +50,18 @@
 			});
 
 			// Success
-			let data = res?.data?.data;
+			let data = res?.data;
 
 			localStorage.setItem('authToken', data?.token);
-			localStorage.setItem('userId', data?.user_id);
+			localStorage.setItem('userId', data?.userInfo?.id);
+			localStorage.setItem('userName', data?.userInfo?.name);
 
-	  		document.cookie = `session_token=${data?.token}; path=/; max-age=${data?.expired_at}`;
+	  		document.cookie = `session_token=${data?.token}; path=/; max-age=${data?.userInfo?.expiresIn}`;
 
 			// Cookie set (expires in 1 hour)
 			// document.cookie = `session_token=${data?.token}; path=/; max-age=3600`;
-
-			window.location.href = '/profile';
+						
+			window.location.href = '/dashboard';
 		} catch (error) {
 			let validationErrors = error.response?.data?.errors;
 			let isSuccess = error.response?.data?.success;

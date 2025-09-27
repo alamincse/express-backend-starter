@@ -52,10 +52,12 @@ class AuthController {
 		    const payload = { 
 		    	id: user._id, 
 		    	name: user.name,
+		    	email: user.email,
+		    	expiresIn: process.env.JWT_EXPIRES_IN ?? 3600,
 		    };
 
 		    const expiresIn = { 
-		    	expiresIn: process.env.JWT_EXPIRES_IN ?? '1h' 
+		    	expiresIn: process.env.JWT_EXPIRES_IN ?? 3600 
 		    }
 
 		    // JWT generate
@@ -65,7 +67,7 @@ class AuthController {
 		      	expiresIn
 		    );
 
-      		res.status(200).json({ token, message: 'Success' });
+      		res.status(200).json({ token, userInfo: payload, message: 'Success' });
     	} catch (error) {
       		res.status(400).json({ error: error.message });
     	}
@@ -73,9 +75,9 @@ class AuthController {
 
   	async logout(req, res) {
     	try {
-      		// const user = await User.create(req.body);
+      		res.clearCookie('session_token');
 
-      		// res.status(200).json(user);
+            return res.status(200).json({ message: 'Logged out successfully' });
     	} catch (error) {
       		res.status(400).json({ error: error.message });
     	}
