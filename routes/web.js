@@ -6,19 +6,9 @@ const DashboardController = require('@app/controllers/web/DashboardController');
 const HomeController = require('@app/controllers/web/HomeController');
 const AuthMiddleware = require('@app/middleware/AuthMiddleware');
 
-Route.get('/', 
-	(req, res, next) => RedirectIfAuthenticated.handle(req, res, next),
-	(req, res) => HomeController.index(req, res)
-);
+Route.get('/', RedirectIfAuthenticated, HomeController.index);
+Route.get('/register', RedirectIfAuthenticated, HomeController.register);
 
-Route.get('/register', 
-	(req, res, next) => RedirectIfAuthenticated.handle(req, res, next),
-	(req, res) => HomeController.register(req, res)
-);
-
-Route.get('/dashboard', 
-	(req, res, next) => AuthMiddleware.handle(req, res, next), 
-	(req, res) => DashboardController.index(req, res)
-);
+Route.get('/dashboard', AuthMiddleware, DashboardController.index);
 
 module.exports = Route;

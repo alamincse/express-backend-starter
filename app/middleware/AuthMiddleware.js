@@ -55,4 +55,6 @@ class AuthMiddleware {
 	}
 }
 
-module.exports = new AuthMiddleware();
+const middleware = new AuthMiddleware();
+
+module.exports = middleware.handle;

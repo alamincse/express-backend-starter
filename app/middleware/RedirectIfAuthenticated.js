@@ -44,4 +44,6 @@ class RedirectIfAuthenticated {
     }
 }
 
-module.exports = new RedirectIfAuthenticated();
+const middleware = new RedirectIfAuthenticated();
+
+module.exports = middleware.handle;

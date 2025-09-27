@@ -3,11 +3,11 @@ const Route = express.Router();
 
 const UserController = require('@app/controllers/api/UserController');
 const AuthController = require('@app/controllers/api/AuthController');
+const AuthMiddleware = require('@app/middleware/AuthMiddleware');
 
+Route.post('/users', UserController.store);
 
-Route.post('/users', (req, res) => UserController.store(req, res));
-
-Route.post('/login', (req, res) => AuthController.login(req, res));
-Route.post('/logout', (req, res) => AuthController.logout(req, res));
+Route.post('/login', AuthController.login);
+Route.post('/logout', AuthMiddleware, AuthController.logout);
 
 module.exports = Route;
