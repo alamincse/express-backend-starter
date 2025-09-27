@@ -1,0 +1,281 @@
+<div class="container mt-5">
+	<div class="profile-container">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h3>Welcome <span id="userName"></span></h3>
+			<button id="logout" class="btn btn-danger">Logout</button>
+		</div>
+
+		<h5>Register User List</h5>
+	  	<table class="table table-striped" id="usersTable" style="display: none;">
+	    	<thead>
+	      		<tr>
+			        <th>#</th>
+			        <th>Name</th>
+			        <th>Email</th>
+			        <th>Join Date</th>
+			        <th>Action</th>
+	      		</tr>
+	    	</thead>
+	    	
+	    	<tbody></tbody>
+	  	</table>
+
+	  	<!-- Update User Modal -->
+		<div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateUserModalLabel" aria-hidden="true">
+	  		<div class="modal-dialog modal-md">
+		    	<div class="modal-content">
+		      		<form id="updateUserForm">
+		        		<div class="modal-header">
+		          			<h5 class="modal-title" id="updateUserModalLabel">Update User</h5>
+		          			<button type="button" class="btn-sm btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		        		</div>
+
+		        		<div class="modal-body">
+		        			<div id="generalError" class="error"></div>
+
+		          			<div class="mb-2">
+		            			<label for="name" class="form-label">Name</label>
+		            			<input type="text" class="form-control form-control-sm" id="name" name="name">
+		            			<div class="error" id="nameError"></div>
+		          			</div>
+		          			<div class="mb-2">
+					            <label for="email" class="form-label">Email</label>
+					            <input type="email" class="form-control form-control-sm" id="email" name="email">
+					            <div class="error" id="emailError"></div>
+		          			</div>
+		          			
+		          			<input type="hidden" id="userId">
+		        		</div>
+
+		        		<div class="modal-footer">
+		          			<button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+		          			<button type="submit" class="btn btn-sm btn-success">Update</button>
+		        		</div>
+		      		</form>
+		    	</div>
+		  	</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function deleteItem(id) {
+		if (confirm('Are you sure want to delete this item ?')) {
+			try {
+				const token = localStorage.getItem('authToken');
+
+				const response = axios.post('/api/users/delete', {
+					id: id,
+				}, {
+					headers: {
+						Authorization: `Bearer ${token}`
+					}
+				});
+
+				window.location.href = '/profile';
+			} catch (err) {
+				console.error('Error fetching user:', err.response?.data || err.message);
+			}
+		}
+	}
+
+	(async () => {
+		const token = localStorage.getItem('authToken');
+		const userId = localStorage.getItem('userId');
+
+		if (! token) {
+			window.location.href = '/';
+			return;
+		}
+
+		// get logged in user info
+		let user = {};
+
+		try {
+			const response = await axios.post('/api/users/show', {
+				id: userId,
+			}, {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			});
+
+			user = response?.data?.data;
+		} catch (err) {
+			console.error('Error fetching user:', err.response?.data || err.message);
+		}
+
+		document.getElementById('userName').textContent = user.name || userId;
+
+
+		// get all users and display the table
+		try {
+			const { data } = await axios.get('/api/users', {
+          		headers: { 
+          			Authorization: `Bearer ${token}` 
+          		}
+	        });
+
+	        const users = data?.data || [];
+
+	        const table = document.getElementById('usersTable');
+	        const tbody = table.querySelector('tbody');
+
+	        tbody.innerHTML = '';
+
+	        if (users?.length > 0) {
+	        	users.forEach((user, index) => {
+	        		const tr = document.createElement('tr');
+
+	        		const deleteButton = Number(userId) === Number(user.id)
+						? `<button class="btn btn-sm btn-secondary" disabled>Delete</button>`
+						: `<button class="btn btn-sm btn-danger" onclick="deleteItem(${user.id})">Delete</button>`;
+
+
+	        		tr.innerHTML = `
+		            	<td>${index + 1}</td>
+		              	<td>${user.name || '-'}</td>
+		              	<td>${user.email || '-'}</td>
+		              	<td>${
+							new Date(user.created_at).toLocaleString('en-US', {
+								timeZone: 'Asia/Dhaka',
+								dateStyle: 'medium',
+								timeStyle: 'short',
+							})
+						}</td>
+						<td>
+							<button 
+								type="button" 
+								class="btn btn-sm btn-primary" 
+								data-bs-toggle="modal" 
+								data-bs-target="#updateUserModal"
+								data-id="${user.id}"
+								data-name="${user.name}"
+								data-email="${user.email}"
+							>
+								Edit
+							</button>
+
+							${deleteButton}
+						</td>
+		            `;
+
+		            tbody.appendChild(tr);
+	        	});
+
+	        	table.style.display = 'table';
+	        } else {
+	        	table.style.display = 'none';
+
+	        	alert('No users found.');
+	        }
+		} catch (error) {
+	        console.error('Error:', error);
+
+	        alert('Failed to load user list.');
+	    }
+
+	    // logout
+		document.getElementById('logout').addEventListener('click', async () => {
+			try {
+				await axios.post('/api/logout', null, {
+					headers: {
+						Authorization: `Bearer ${token}`
+					}
+				});
+
+				// Clear localStorage
+				localStorage.removeItem('authToken');
+				localStorage.removeItem('userId');
+
+				// // Clear cookie
+				document.cookie = 'session_token=; Path=/; Max-Age=0';
+
+				// redirect to home ('/') location
+				window.location.href = '/';
+			} catch (error) {
+				console.error('Logout failed:', error);
+				alert('Logout failed');
+			}
+		});
+
+
+		// get Bootstrap modal instance
+	  	const updateUserModal = document.getElementById('updateUserModal');
+
+	  	// data put into the input fields when modal display
+	  	updateUserModal.addEventListener('show.bs.modal', function (event) {
+	  		// which Edit button is clicked
+	    	const button = event.relatedTarget; 
+
+	    	// get value from the data-* attributes
+		    const userId = button.getAttribute('data-id');
+		    const name = button.getAttribute('data-name');
+		    const email = button.getAttribute('data-email');
+
+	    	// put the value into the modal input fields
+		    document.getElementById('userId').value = userId;
+		    document.getElementById('name').value = name;
+		    document.getElementById('email').value = email;
+	  	});
+
+		// User update
+		document.getElementById('updateUserForm').addEventListener('submit', async function (e) {
+		    e.preventDefault();
+
+		    const id = document.getElementById('userId').value;
+		    const name = document.getElementById('name').value;
+		    const email = document.getElementById('email').value;
+
+		    // remove/hide fields error if input value is correct!
+			document.querySelectorAll('#updateUserForm input').forEach(input => {
+		  		input.addEventListener('input', () => {
+			    	const errorDiv = document.getElementById(`${input.name}Error`);
+			    
+				    if (errorDiv) {
+			     		errorDiv.innerText = '';
+				    }
+			  	});
+			});
+
+		    try {
+		    	await axios.put('/api/users/update', {
+			    		id: id,
+			    		name: name,
+						email: email,
+		    		}, 
+		    		{
+						headers: {
+							Authorization: `Bearer ${token}`
+						}
+					}
+				);
+
+		      alert('User updated successfully');
+
+		      const modal = bootstrap.Modal.getInstance(document.getElementById('updateUserModal'));
+		      modal.hide();
+
+		      // Optionally reload user list
+		      window.location.href = '/profile';
+		    } catch (error) {
+		    	let validationErrors = error.response?.data?.errors;
+				let isSuccess = error.response?.data?.success;
+
+				if (! isSuccess) {
+					if (validationErrors?.name) {
+			          document.getElementById('nameError').innerText = validationErrors.name;
+			        }
+			        if (validationErrors?.email) {
+			          document.getElementById('emailError').innerText = validationErrors.email;
+			        }
+			        if (validationErrors?.message) {
+			        	document.getElementById('generalError').innerText = validationErrors.message
+			        }
+		        } else {
+		        	document.getElementById('generalError').innerText = 'Something went wrong';
+				}
+		    }
+		});
+	})();
+</script>
