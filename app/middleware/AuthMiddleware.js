@@ -6,7 +6,7 @@ class AuthMiddleware {
 			let token = '';
 			let isBearer = false;
 
-			const authHeader = req.headers['authorization']
+			const authHeader = req.headers['authorization'] ?? '';
 
 			// check bearer token
 			if (authHeader && authHeader.startsWith('Bearer ')) {
