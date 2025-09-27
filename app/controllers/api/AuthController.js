@@ -63,7 +63,7 @@ class AuthController {
 		    // JWT generate
 		    const token = jwt.sign(
 	      		payload,
-		      	process.env.JWT_SECRET ?? "secretKey123", 
+		      	process.env.JWT_SECRET, 
 		      	expiresIn
 		    );
 
