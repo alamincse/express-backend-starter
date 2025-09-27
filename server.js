@@ -7,6 +7,7 @@
  *  - Serves static files
  *  - Configurable view engine and layouts
  *  - Modular route registration
+ *  - Logger & RenderService globally available
  *  - Handles server errors gracefully
  */
 require('module-alias/register'); // load module alias register(first)
@@ -14,6 +15,7 @@ const express = require('express');
 const env = require('@config/env');
 const expressLayouts = require('express-ejs-layouts');
 const RenderService = require('@app/services/RenderService');
+const LoggerService = require('@app/services/LoggerService');
 const Route  = require('@app/providers/RouteServiceProvider');
 require('@config/db');
 
@@ -37,8 +39,9 @@ class AppServer {
 
 		this.app = express();
 
-		// Make RenderService globally available
-    	global.RenderService = RenderService;
+		// Make RenderService, LoggerService globally available
+    	global.Render = RenderService;
+    	global.Log = LoggerService;
 
 		this.registerMiddlewares();
 	    this.setViewEngine();
@@ -89,17 +92,17 @@ class AppServer {
        		 * Start listening on configured host and port.
 	         */
 			this.app.listen(this.port, () => {
-				console.log(`Server is running at ${this.host}:${this.port}`);
+				Log.info(`Server is running at ${this.host}:${this.port}`);
 			});
 
 			/**
 		     * Handle server-level unexpected errors.
 		     */
 		    this.app.on('error', (err) => {
-	      		console.error('Server error: ', error.stack ?? error.message);
+	      		Log.error('Server error: ', error.stack ?? error.message);
 		    });
 		} catch(error) {
-			console.error('Caught exception: ', error.stack ?? error.message);
+			Log.error('Caught exception: ', error.stack ?? error.message);
 		}
 	}
 }
