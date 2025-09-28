@@ -12,12 +12,13 @@ A simple **Express.js boilerplate project** following MVC structure. This projec
 - Organized routes, controllers, models and services
 - Input validation
 - Secure authentication system
+- MongoDB (mongoose)
 - EJS template engine
 
 ---
 
-## Project Structure
-
+## Folder Structure
+<pre lang="bash">
 express.js-app/
 ├── app/
 │ ├── controllers/
@@ -35,18 +36,17 @@ express.js-app/
 ├── views/
 ├── server.js
 └── package.json
-
+</pre>
 
 ## Installation & Setup
 
 1. Clone the repository
-   ```bash
-   git clone git@github.com:alamincse/express-backend-starter.git
-   cd express-backend-starter
+```bash
+git clone git@github.com:alamincse/express-backend-starter.git
+cd express-backend-starter
 ```
-
 2. Install dependencies
-```js
+```bash
 npm install
 ```
 3. Create a `.env` file (use `.env.example` as reference)
