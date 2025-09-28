@@ -12,6 +12,7 @@ A simple **Express.js boilerplate project** following MVC structure. This projec
 - Organized routes, controllers, models and services
 - Input validation
 - Secure authentication system
+- RateLimiter for api routes
 - MongoDB (mongoose)
 - EJS template engine
 
