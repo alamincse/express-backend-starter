@@ -91,15 +91,13 @@
 		let user = {};
 
 		try {
-			const response = await axios.post('/api/users/show', {
-				id: userId,
-			}, {
+			const response = await axios.get(`/api/users/${userId}`, {
 				headers: {
 					Authorization: `Bearer ${token}`
 				}
 			});
 
-			user = response?.data?.data;
+			user = response?.data?.user;
 		} catch (err) {
 			console.error('Error fetching user:', err.response?.data || err.message);
 		}

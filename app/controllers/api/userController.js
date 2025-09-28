@@ -70,6 +70,22 @@ class UserController {
     	}
   	}
 
+    async show(req, res) {
+        try {
+            const userId = req.params?.id;
+
+            const user = await User.findById(userId);
+
+            if (! user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            res.status(200).json({ user, message: 'Success' });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
+
     async update(req, res) {
         try {
             await body('name')
@@ -101,14 +117,15 @@ class UserController {
                 return res.status(400).json({ errors: errorObject });
             }
 
-            const { id, name, email } = req.body;
+            const { name, email } = req.body;
+            const userId = req.params?.id;
 
             const data = {
                 name, 
                 email, 
             };
 
-            const user = await User.update(id, data);
+            const user = await User.update(userId, data);
 
             res.status(200).json({ user, message: 'Success' });
         } catch (error) {
