@@ -69,6 +69,68 @@ class UserController {
       		res.status(400).json({ error: error.message });
     	}
   	}
+
+    async update(req, res) {
+        try {
+            await body('name')
+                    .notEmpty().withMessage('Name is required').bail()
+                    .isLength({ min: 2 }).withMessage('Name must be at least 2 characters')
+                    .run(req);
+
+            await body('email')
+                    .notEmpty().withMessage('Email is required').bail()
+                    .isEmail().withMessage('Invalid email')
+                    .custom(async (value) => {
+                        const user = await User.findOne({ email: value });
+
+                        if (user && user._id.toString() !== req.params.id) {
+                            throw new Error('Email already in use');
+                        } 
+                    })
+                    .run(req);
+
+            const errors = validationResult(req);
+
+            if (! errors.isEmpty()) {
+                const errorObject = {};
+
+                errors.array().forEach(err => {
+                    errorObject[err.path] = err.msg; 
+                });
+
+                return res.status(400).json({ errors: errorObject });
+            }
+
+            const { id, name, email } = req.body;
+
+            const data = {
+                name, 
+                email, 
+            };
+
+            const user = await User.update(id, data);
+
+            res.status(200).json({ user, message: 'Success' });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
+
+    async destroy(req, res) {
+        try {
+            const userId = req.params?.id;
+
+            const user = User.delete(userId);
+
+            if (! user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            return res.status(200).json({ message: 'User deleted successfully' });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = new UserController();

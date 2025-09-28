@@ -64,9 +64,7 @@
 			try {
 				const token = localStorage.getItem('authToken');
 
-				const response = axios.post('/api/users/delete', {
-					id: id,
-				}, {
+				const response = axios.delete(`/api/users/${id}`, {
 					headers: {
 						Authorization: `Bearer ${token}`
 					}
@@ -128,9 +126,9 @@
 	        	users.forEach((user, index) => {
 	        		const tr = document.createElement('tr');
 
-	        		const deleteButton = Number(userId) === Number(user.id)
+	        		const deleteButton = String(userId) == String(user._id)
 						? `<button class="btn btn-sm btn-secondary" disabled>Delete</button>`
-						: `<button class="btn btn-sm btn-danger" onclick="deleteItem(${user.id})">Delete</button>`;
+						: `<button class="btn btn-sm btn-danger" onclick="deleteItem('${user._id}')">Delete</button>`;
 
 
 	        		tr.innerHTML = `
@@ -138,7 +136,7 @@
 		              	<td>${user.name || '-'}</td>
 		              	<td>${user.email || '-'}</td>
 		              	<td>${
-							new Date(user.created_at).toLocaleString('en-US', {
+							new Date(user.createdAt).toLocaleString('en-US', {
 								timeZone: 'Asia/Dhaka',
 								dateStyle: 'medium',
 								timeStyle: 'short',
