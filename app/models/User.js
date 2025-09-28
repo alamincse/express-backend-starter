@@ -7,7 +7,7 @@ class User {
 	}
 
 	async findAll() {
-	    return this.model.find();
+	    return this.model.find().select('name email status createdAt');
   	}
 
 	async findById(id) {
