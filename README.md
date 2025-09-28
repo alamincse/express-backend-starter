@@ -19,7 +19,7 @@ A simple **Express.js boilerplate project** following MVC structure. This projec
 
 ## Folder Structure
 <pre lang="bash">
-express.js-app/
+express-backend-starter/
 ├── app/
 │ ├── controllers/
 │ ├── middleware/
