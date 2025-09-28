@@ -88,6 +88,8 @@ class UserController {
 
     async update(req, res) {
         try {
+            const userId = req.params?.id;
+
             await body('name')
                     .notEmpty().withMessage('Name is required').bail()
                     .isLength({ min: 2 }).withMessage('Name must be at least 2 characters')
@@ -99,7 +101,7 @@ class UserController {
                     .custom(async (value) => {
                         const user = await User.findOne({ email: value });
 
-                        if (user && user._id.toString() !== req.params.id) {
+                        if (user && user._id.toString() !== userId) {
                             throw new Error('Email already in use');
                         } 
                     })
@@ -118,7 +120,6 @@ class UserController {
             }
 
             const { name, email } = req.body;
-            const userId = req.params?.id;
 
             const data = {
                 name, 

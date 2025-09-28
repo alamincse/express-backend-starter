@@ -146,7 +146,7 @@
 								class="btn btn-sm btn-primary" 
 								data-bs-toggle="modal" 
 								data-bs-target="#updateUserModal"
-								data-id="${user.id}"
+								data-id="${user._id}"
 								data-name="${user.name}"
 								data-email="${user.email}"
 							>
@@ -237,8 +237,7 @@
 			});
 
 		    try {
-		    	await axios.put('/api/users/update', {
-			    		id: id,
+		    	await axios.put(`/api/users/${id}`, {
 			    		name: name,
 						email: email,
 		    		}, 
